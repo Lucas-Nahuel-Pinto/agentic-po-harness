@@ -21,14 +21,14 @@ The core insight: the integration trunk is a "`main` surrogate" for the suite. "
 
 ## Trunk naming convention
 
-`<module>`, `<KEY>`, `<slug>` in this document are **placeholders** — substitute the real values. Do NOT copy the literal examples (`monthly-statement`, `BK-742`); they only illustrate the shape.
+`<module>`, `<KEY>`, `<slug>` in this document are **placeholders** — substitute the real values. Do NOT copy the literal examples (`monthly-statement`, `STORY-742`); they only illustrate the shape.
 
 The trunk name derives from the **suite's scope** (the `/test-automation` planning scope that opened it):
 
 | Scope (from `/test-automation`) | Trunk name pattern | Example |
 | --- | --- | --- |
 | **Module-driven** (Macro) — a whole module | `test/<module-slug>-suite` | `test/monthly-statement-suite` |
-| **Ticket-driven** (Medium) — one user story split across several PRs | `test/<STORY-KEY>-<slug>-suite` | `test/BK-742-checkout-suite` |
+| **Ticket-driven** (Medium) — one user story split across several PRs | `test/<STORY-KEY>-<slug>-suite` | `test/STORY-742-checkout-suite` |
 | **Regression-driven** (Micro) — a single TC | usually **no trunk** — one `test/{KEY}-{slug}` branch straight to a normal PR; only spin up a trunk if the single TC genuinely fans into multiple chained PRs |
 
 Rule of thumb: the trunk is named after **whatever the suite is about** — a module slug when automating a module, the story key+slug when chaining PRs under one story. The `-suite` suffix is deliberate and scope-neutral: a single trunk collects whatever the chained PRs are — E2E specs, integration specs, or a mix of UI and API ATCs — so `-suite` covers all of them without implying the work is only end-to-end. Keep it lowercase, hyphen-separated, ≤50 chars, and unique per live suite.
@@ -247,7 +247,7 @@ A suite spans many ticket branches and multiple `/test-automation` invocations. 
 **Recommended line shape** (append-only — never edit a prior one):
 
 ```
-- git: trunk test/monthly-statement-suite@a1b2c3d | merged test/BK-757 --no-ff | pending: BK-758..BK-761 | sync-gate: no | final-PR: none
+- git: trunk test/monthly-statement-suite@a1b2c3d | merged test/STORY-757 --no-ff | pending: STORY-758..STORY-761 | sync-gate: no | final-PR: none
 ```
 
 **On resume (Phase 0)**: read the tail of `progress.md`, take the **last** `git:` line. It tells the resuming session: the trunk name + tip SHA, which tickets are already merged, which remain, whether the sync gate has run, and whether the final PR is open. From there, continue the per-ticket loop — cut the next pending ticket from the (updated) trunk. This is the reinforcement that keeps the SDET flow on track even if a later session has lost the strategy context.
