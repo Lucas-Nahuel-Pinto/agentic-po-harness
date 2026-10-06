@@ -1,0 +1,12 @@
+{
+  "name": "agentic-pm-harness",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent console for PM workflows on the Jira traceability project: status reports, sprint health, alerts-to-Jira",
+  "license": "MIT",
+  "scripts": {
+    "pm": "bun scripts/pm.ts",
+    "test": "bun test"
+  }
+}
