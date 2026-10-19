@@ -1,5 +1,5 @@
 ---
-name: pm-sprint-health
+name: po-sprint-health
 description: >
   Health check of the active sprint from the traceability snapshot: open vs
   done, workload per person, blocked items and stories at risk before the
@@ -8,7 +8,7 @@ description: >
   "qué falta en el sprint". Read-only — never writes to Jira.
 ---
 
-# pm-sprint-health
+# po-sprint-health
 
 Assess sprint delivery risk: is the sprint going to close clean, and if not,
 what is in the way. Data comes from the snapshot's `sprint` field; sprint
@@ -25,9 +25,9 @@ dates (start/end) come from Jira via `/acli`.
 ## Steps
 
 1. **Identify the sprint.** If the user did not name one:
-   `bun scripts/pm.ts sprint-health --list-sprints` and either pick the one
+   `bun scripts/po.ts sprint-health --list-sprints` and either pick the one
    with open issues or ask the user to choose. Warn if auto-picked.
-2. **Compute.** `bun scripts/pm.ts sprint-health --sprint "<name>" --json` —
+2. **Compute.** `bun scripts/po.ts sprint-health --sprint "<name>" --json` —
    totals, open/done, status breakdown, load per assignee, blocked items,
    open stories. Fallback to non-JSON output for a quick read.
 3. **Get the deadline.** Query sprint start/end via `/acli` (board/sprint
@@ -53,5 +53,5 @@ dates (start/end) come from Jira via `/acli`.
   scope commentary.
 - Load rows use points when present; say "sin puntos" rather than implying
   precision the data does not have.
-- PM voice for the verdict; technical register for issue keys, statuses and
+- PO voice for the verdict; technical register for issue keys, statuses and
   commands.

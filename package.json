@@ -1,12 +1,12 @@
 {
-  "name": "agentic-pm-harness",
+  "name": "agentic-po-harness",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Agent console for PM workflows on the Jira traceability project: status reports, sprint health, alerts-to-Jira",
+  "description": "Agent console for Product Owner workflows on the Jira traceability project: backlog visibility, sprint goal health, alerts-to-Jira",
   "license": "MIT",
   "scripts": {
-    "pm": "bun scripts/pm.ts",
+    "po": "bun scripts/po.ts",
     "test": "bun test"
   }
 }

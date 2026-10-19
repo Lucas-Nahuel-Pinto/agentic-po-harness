@@ -1,14 +1,14 @@
 import { describe, expect, test } from 'bun:test';
-import type { PmEdge, PmNode, PmSnapshot } from '../scripts/pm.ts';
-import { alerts, bugAging, epicProgress, listSprints, loadByAssignee, openBlockers, reportMarkdown, sprintHealth, throughput } from '../scripts/pm.ts';
+import type { PoEdge, PoNode, PoSnapshot } from '../scripts/po.ts';
+import { alerts, bugAging, epicProgress, listSprints, loadByAssignee, openBlockers, reportMarkdown, sprintHealth, throughput } from '../scripts/po.ts';
 
 const now = new Date('2026-10-06T12:00:00.000Z');
 
-function node(partial: Partial<PmNode> & { key: string }): PmNode {
+function node(partial: Partial<PoNode> & { key: string }): PoNode {
   return { kind: 'issue', ...partial };
 }
 
-const nodes: PmNode[] = [
+const nodes: PoNode[] = [
   node({ key: 'EPIC-1', issueType: 'Epic', status: 'In Progress', statusCategory: 'indeterminate' }),
   node({ key: 'ST-1', issueType: 'Story', parent: 'EPIC-1', statusCategory: 'done', assignee: 'Ana', points: 3, sprint: 'Sprint 9', resolutionDate: '2026-10-01T10:00:00.000Z' }),
   node({ key: 'ST-2', issueType: 'Story', parent: 'EPIC-1', status: 'In Progress', statusCategory: 'indeterminate', assignee: 'Ana', points: 5, sprint: 'Sprint 9' }),
@@ -18,12 +18,12 @@ const nodes: PmNode[] = [
   node({ key: 'BUG-1', issueType: 'Bug', status: 'Open', statusCategory: 'new', assignee: 'Beto', createdAt: '2026-06-27T10:00:00.000Z', sprint: 'Sprint 9' }),
 ];
 
-const edges: PmEdge[] = [
+const edges: PoEdge[] = [
   { from: 'BUG-1', to: 'ST-2', kind: 'link:blocks' },
   { from: 'EPIC-1', to: 'ST-1', kind: 'hierarchy' },
 ];
 
-const snapshot: PmSnapshot = {
+const snapshot: PoSnapshot = {
   meta: { projectKey: 'BK', generatedAt: '2026-10-06T12:00:00.000Z', counts: { nodes: nodes.length, edges: edges.length } },
   nodes,
   edges,

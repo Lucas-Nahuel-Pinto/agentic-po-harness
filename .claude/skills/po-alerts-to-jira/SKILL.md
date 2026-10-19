@@ -1,5 +1,5 @@
 ---
-name: pm-alerts-to-jira
+name: po-alerts-to-jira
 description: >
   Turn traceability structure alerts (orphan stories, empty epics, bugs
   without story, open blockers) into Jira actions: comments, follow-up issues
@@ -9,7 +9,7 @@ description: >
   This is the ONLY skill in this repo that WRITES to Jira.
 ---
 
-# pm-alerts-to-jira
+# po-alerts-to-jira
 
 The dashboard's Alertas tab DETECTS structure problems; this skill ACTS on
 them through the Atlassian CLI. Every Jira write requires an explicit,
@@ -19,7 +19,7 @@ itemized confirmation — no bulk writes on trust.
 
 | Input | Source |
 | --- | --- |
-| Alert list | `bun scripts/pm.ts alerts --json` (mirrors the dashboard Alertas tab exactly) |
+| Alert list | `bun scripts/po.ts alerts --json` (mirrors the dashboard Alertas tab exactly) |
 | Actions | User's request: comment / create follow-up / transition — default is COMMENT only |
 | Jira access | `/acli` — LOAD the acli skill before any command; credentials from `.env` |
 
@@ -27,7 +27,7 @@ itemized confirmation — no bulk writes on trust.
 
 1. **Load context.** Load the `/acli` skill first (syntax, auth, error
    handling). Load `.env` rules from AGENTS.md — credentials never inline.
-2. **Fetch alerts.** `bun scripts/pm.ts alerts --json` — grouped:
+2. **Fetch alerts.** `bun scripts/po.ts alerts --json` — grouped:
    `orphan-story`, `empty-epic`, `bug-without-story`, `open-block`.
 3. **Propose a plan (DRY-RUN).** Build an itemized table: alert → issue key →
    proposed action → exact command that will run. Defaults:

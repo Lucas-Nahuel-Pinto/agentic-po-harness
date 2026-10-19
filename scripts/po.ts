@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-export interface PmNode {
+export interface PoNode {
   key: string
   kind: string
   url?: string
@@ -18,16 +18,16 @@ export interface PmNode {
   parent?: string
 }
 
-export interface PmEdge {
+export interface PoEdge {
   from: string
   to: string
   kind: string
 }
 
-export interface PmSnapshot {
+export interface PoSnapshot {
   meta: { projectKey: string, generatedAt: string, counts?: { nodes: number, edges: number } }
-  nodes: PmNode[]
-  edges: PmEdge[]
+  nodes: PoNode[]
+  edges: PoEdge[]
 }
 
 export interface EpicRow {
@@ -87,25 +87,25 @@ export interface SprintReport {
 const DEFAULT_TRACE = resolve(import.meta.dir, '../../jira-traceability-manager/data/trace.json');
 const DAY_MS = 86_400_000;
 
-export function loadSnapshot(explicit?: string): PmSnapshot {
+export function loadSnapshot(explicit?: string): PoSnapshot {
   const path = explicit ?? process.env.TRACE_PATH ?? DEFAULT_TRACE;
-  const snapshot = JSON.parse(readFileSync(path, 'utf8')) as PmSnapshot;
+  const snapshot = JSON.parse(readFileSync(path, 'utf8')) as PoSnapshot;
   if (!Array.isArray(snapshot.nodes) || snapshot.nodes.length === 0) {
     throw new Error(`snapshot inválido o vacío en ${path} — corré "bun run trace:pull" en jira-traceability-manager`);
   }
   return snapshot;
 }
 
-export function isOpen(node: PmNode): boolean {
+export function isOpen(node: PoNode): boolean {
   return node.statusCategory !== 'done';
 }
 
-function issueNodes(snapshot: PmSnapshot): PmNode[] {
+function issueNodes(snapshot: PoSnapshot): PoNode[] {
   return snapshot.nodes.filter(node => node.kind === 'issue');
 }
 
-function childrenMap(nodes: PmNode[]): Map<string, PmNode[]> {
-  const map = new Map<string, PmNode[]>();
+function childrenMap(nodes: PoNode[]): Map<string, PoNode[]> {
+  const map = new Map<string, PoNode[]>();
   for (const node of nodes) {
     if (!node.parent) { continue; }
     const bucket = map.get(node.parent) ?? [];
@@ -115,8 +115,8 @@ function childrenMap(nodes: PmNode[]): Map<string, PmNode[]> {
   return map;
 }
 
-function collectDescendants(key: string, children: Map<string, PmNode[]>): PmNode[] {
-  const out: PmNode[] = [];
+function collectDescendants(key: string, children: Map<string, PoNode[]>): PoNode[] {
+  const out: PoNode[] = [];
   const stack = [...(children.get(key) ?? [])];
   while (stack.length > 0) {
     const node = stack.pop();
@@ -127,7 +127,7 @@ function collectDescendants(key: string, children: Map<string, PmNode[]>): PmNod
   return out;
 }
 
-export function epicProgress(nodes: PmNode[]): EpicRow[] {
+export function epicProgress(nodes: PoNode[]): EpicRow[] {
   const children = childrenMap(nodes);
   return nodes
     .filter(node => node.issueType === 'Epic')
@@ -146,7 +146,7 @@ export function epicProgress(nodes: PmNode[]): EpicRow[] {
     .sort((a, b) => a.pct - b.pct || a.key.localeCompare(b.key));
 }
 
-export function throughput(nodes: PmNode[], days: number, now: Date): DoneRow[] {
+export function throughput(nodes: PoNode[], days: number, now: Date): DoneRow[] {
   const cutoff = now.getTime() - days * DAY_MS;
   return nodes
     .filter(node => node.resolutionDate && Date.parse(node.resolutionDate) >= cutoff)
@@ -159,7 +159,7 @@ export function throughput(nodes: PmNode[], days: number, now: Date): DoneRow[] 
     .sort((a, b) => Date.parse(b.resolutionDate) - Date.parse(a.resolutionDate));
 }
 
-export function loadByAssignee(nodes: PmNode[]): LoadRow[] {
+export function loadByAssignee(nodes: PoNode[]): LoadRow[] {
   const rows = new Map<string, LoadRow>();
   for (const node of nodes) {
     if (node.issueType === 'Epic' || !isOpen(node)) { continue; }
@@ -172,7 +172,7 @@ export function loadByAssignee(nodes: PmNode[]): LoadRow[] {
   return [...rows.values()].sort((a, b) => b.points - a.points || b.open - a.open);
 }
 
-export function bugAging(nodes: PmNode[], now: Date): AgingBucket[] {
+export function bugAging(nodes: PoNode[], now: Date): AgingBucket[] {
   const buckets: AgingBucket[] = [
     { label: '0-30 días', count: 0, keys: [] },
     { label: '31-60 días', count: 0, keys: [] },
@@ -188,7 +188,7 @@ export function bugAging(nodes: PmNode[], now: Date): AgingBucket[] {
   return buckets;
 }
 
-export function openBlockers(nodes: PmNode[], edges: PmEdge[]): BlockRow[] {
+export function openBlockers(nodes: PoNode[], edges: PoEdge[]): BlockRow[] {
   const byKey = new Map(nodes.map(node => [node.key, node] as const));
   const rows: BlockRow[] = [];
   for (const edge of edges) {
@@ -207,7 +207,7 @@ export function openBlockers(nodes: PmNode[], edges: PmEdge[]): BlockRow[] {
   return rows;
 }
 
-export function alerts(nodes: PmNode[], edges: PmEdge[]): AlertRow[] {
+export function alerts(nodes: PoNode[], edges: PoEdge[]): AlertRow[] {
   const rows: AlertRow[] = [];
   const children = childrenMap(nodes);
   const byKey = new Map(nodes.map(node => [node.key, node] as const));
@@ -231,7 +231,7 @@ export function alerts(nodes: PmNode[], edges: PmEdge[]): AlertRow[] {
   return rows;
 }
 
-function pickSprint(nodes: PmNode[]): string | undefined {
+function pickSprint(nodes: PoNode[]): string | undefined {
   const counts = new Map<string, number>();
   for (const node of nodes) {
     if (!node.sprint || !isOpen(node)) { continue; }
@@ -248,7 +248,7 @@ function pickSprint(nodes: PmNode[]): string | undefined {
   return best;
 }
 
-export function sprintHealth(snapshot: PmSnapshot, sprintName?: string): SprintReport {
+export function sprintHealth(snapshot: PoSnapshot, sprintName?: string): SprintReport {
   const nodes = issueNodes(snapshot);
   const name = sprintName ?? pickSprint(nodes);
   if (!name) {
@@ -278,7 +278,7 @@ export function sprintHealth(snapshot: PmSnapshot, sprintName?: string): SprintR
   };
 }
 
-export function listSprints(snapshot: PmSnapshot): { sprint: string, open: number, total: number }[] {
+export function listSprints(snapshot: PoSnapshot): { sprint: string, open: number, total: number }[] {
   const map = new Map<string, { sprint: string, open: number, total: number }>();
   for (const node of issueNodes(snapshot)) {
     if (!node.sprint) { continue; }
@@ -302,7 +302,7 @@ export interface ReportData {
   alerts: AlertRow[]
 }
 
-export function reportJson(snapshot: PmSnapshot, now: Date): ReportData {
+export function reportJson(snapshot: PoSnapshot, now: Date): ReportData {
   const nodes = issueNodes(snapshot);
   return {
     projectKey: snapshot.meta.projectKey,
@@ -326,7 +326,7 @@ function md(text: string | undefined): string {
   return (text ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
 }
 
-export function reportMarkdown(snapshot: PmSnapshot, now: Date): string {
+export function reportMarkdown(snapshot: PoSnapshot, now: Date): string {
   const data = reportJson(snapshot, now);
   const lines: string[] = [];
   lines.push(`# Reporte de trazabilidad — ${data.projectKey}`);
@@ -486,7 +486,7 @@ function main(argv: string[]): void {
       break;
     }
     default:
-      throw new Error('uso: bun scripts/pm.ts <report|sprint-health|alerts> [--json] [--sprint "<nombre>"] [--list-sprints] [--trace <path>]');
+      throw new Error('uso: bun scripts/po.ts <report|sprint-health|alerts> [--json] [--sprint "<nombre>"] [--list-sprints] [--trace <path>]');
   }
 }
 
@@ -495,7 +495,7 @@ if (import.meta.main) {
     main(process.argv.slice(2));
   }
   catch (error) {
-    console.error(`[pm] ${(error as Error).message}`);
+    console.error(`[po] ${(error as Error).message}`);
     process.exit(1);
   }
 }

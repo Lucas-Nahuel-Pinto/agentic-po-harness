@@ -1,16 +1,16 @@
 ---
-name: pm-status-report
+name: po-status-report
 description: >
-  PM status report from the Jira traceability snapshot: epic progress,
+  PO backlog report from the Jira traceability snapshot: epic progress,
   throughput, workload, bug aging, blockers and structure alerts, written as a
   stakeholder-ready markdown. Use for "status report", "reporte de estado",
   "weekly report", "informe semanal", "estado del proyecto", "reporte de
   trazabilidad", "how is delivery going". Read-only — never writes to Jira.
 ---
 
-# pm-status-report
+# po-status-report
 
-Produce a PM-voice status report from the snapshot in the sibling repo
+Produce a PO-voice status report from the snapshot in the sibling repo
 `jira-traceability-manager`. The dashboard visualizes; this skill narrates for
 humans (stakeholders, PMO, planning meetings).
 
@@ -25,13 +25,13 @@ humans (stakeholders, PMO, planning meetings).
 ## Steps
 
 1. **Freshness check.** Read `meta.generatedAt` from the snapshot (or run
-   `bun scripts/pm.ts report --json | head` to see it). If older than 48 hours,
+   `bun scripts/po.ts report --json | head` to see it). If older than 48 hours,
    ask the user whether to refresh: `cd ../jira-traceability-manager && bun run trace:pull`
    (read-only against Jira; safe to run). Never hand-edit `data/trace.json`.
-2. **Compute.** `bun scripts/pm.ts report --json` — gives epics (progress,
+2. **Compute.** `bun scripts/po.ts report --json` — gives epics (progress,
    worst first), throughput windows (7/14/30 days), load per assignee, bug
    aging, open blockers, structure alerts. Use the markdown output
-   (`bun scripts/pm.ts report`) as the draft skeleton.
+   (`bun scripts/po.ts report`) as the draft skeleton.
 3. **Enrich (optional).** If a sprint deadline matters, get active sprint dates
    via `/acli` and compute days remaining. Note data caveats (stale snapshot,
    Xray off) honestly.
@@ -50,11 +50,11 @@ humans (stakeholders, PMO, planning meetings).
 
 ## Rules
 
-- PM voice: headlines carry delivery meaning, never tool actions. Spanish for
+- PO voice: headlines carry delivery meaning, never tool actions. Spanish for
   conversation output unless the user writes in English; the report file follows
   the user's requested language (default Spanish).
 - Read-only: this skill NEVER writes, transitions or comments on Jira issues —
-  action items discovered here go through `/pm-alerts-to-jira` (its own
+  action items discovered here go through `/po-alerts-to-jira` (its own
   confirmation flow) or are listed as recommendations.
 - Data honesty: report from the snapshot as-is; if freshness is questionable,
   mark the report with the snapshot date.
