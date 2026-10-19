@@ -7,7 +7,7 @@ Agent console for **Product Owner workflows** on the Jira traceability project: 
 ```
 scripts/po.ts               PO CLI: report | sprint-health | alerts (read-only)
 tests/po.test.ts            CLI quality gate (bun test)
-.claude/skills/
+.opencode/skills/
   po-status-report/         Stakeholder-ready backlog/delivery report from the snapshot
   po-sprint-health/         Sprint goal verdict (verde/ámbar/rojo) + blocked/load analysis
   po-alerts-to-jira/        Alerts → Jira actions via acli, plan confirmed first
@@ -16,7 +16,6 @@ tests/po.test.ts            CLI quality gate (bun test)
   git-flow-master/          Git operator skill
   caveman/                  Terse voice skill (vendored from github.com/JuliusBrussee/caveman, Apache-2.0)
 opencode.jsonc              OpenCode MCP config (engram + tavily)
-.mcp.json                   Claude Code MCP config (engram + tavily)
 .env.example                Credential template
 AGENTS.md                   Agent operating rules
 reports/                    Saved status reports and sprint health snapshots
@@ -51,5 +50,5 @@ The CLI reads `../jira-traceability-manager/data/trace.json` by default (`--trac
 
 ## Upstream attribution
 
-- `caveman` skill — © 2026 Julius Brussee, Apache-2.0. See `.claude/skills/caveman/LICENSE-APACHE-2.0` and `NOTICE` in this directory.
+- `caveman` skill — © 2026 Julius Brussee, Apache-2.0. See `.opencode/skills/caveman/LICENSE-APACHE-2.0` and `NOTICE` in this directory.
 - `acli`, `xray-cli`, `git-flow-master` — copied from the project QA boilerplate.

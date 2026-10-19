@@ -5,10 +5,10 @@ PO console for the Jira traceability project: backlog and epic visibility, sprin
 ## Critical rules
 
 1. **CREDENTIALS**: ALWAYS read from `.env` (see `.env.example`). NEVER hardcode or guess secrets. Example keys: `ATLASSIAN_API_TOKEN`, `TAVILY_API_KEY`.
-2. **MCP / AUTH FAILURE = STOP IMMEDIATELY**: if an MCP fails auth or an env var is missing (`.mcp.json` uses `${VAR}` for Claude Code; `opencode.jsonc` uses `{env:VAR}` for OpenCode — OpenCode substitutes empty silently, so a 401/403 is the signal), do NOT work around it. STOP, name the exact env variable, point at `.env` / `.env.example`, and ask the user to fix `.env` + restart the agent session (env is cached at MCP spawn time).
+2. **MCP / AUTH FAILURE = STOP IMMEDIATELY**: if an MCP fails auth or an env var is missing (`opencode.jsonc` uses `{env:VAR}` — OpenCode substitutes empty silently, so a 401/403 is the signal), do NOT work around it. STOP, name the exact env variable, point at `.env` / `.env.example`, and ask the user to fix `.env` + restart the agent session (env is cached at MCP spawn time).
 3. **JIRA WRITES = CONFIRMATION REQUIRED**: `scripts/po.ts` and the `po-status-report` / `po-sprint-health` skills are READ-ONLY. Every comment, transition or issue creation goes through `/po-alerts-to-jira`, whose plan must be confirmed by the user before any `/acli` write runs.
-4. **GIT / PR WORK**: follow `.claude/skills/git-flow-master/` — semantic commit prefixes (`feat:` / `fix:` / `docs:` / `test:` / `refactor:` / `chore:`), no AI attribution in commits, confirm before push, never rewrite pushed history.
-5. **DEFAULT VOICE**: caveman mode is the default conversational register (`.claude/skills/caveman/`). Code, commits, PR bodies, reports files, and security warnings are ALWAYS written in normal English (or Spanish when the user asks for the report in Spanish) — that boundary is built into the skill. Revert to normal mode only when the user says "stop caveman" / "normal mode" or the semantic equivalent.
+4. **GIT / PR WORK**: follow `.opencode/skills/git-flow-master/` — semantic commit prefixes (`feat:` / `fix:` / `docs:` / `test:` / `refactor:` / `chore:`), no AI attribution in commits, confirm before push, never rewrite pushed history.
+5. **DEFAULT VOICE**: caveman mode is the default conversational register (`.opencode/skills/caveman/`). Code, commits, PR bodies, reports files, and security warnings are ALWAYS written in normal English (or Spanish when the user asks for the report in Spanish) — that boundary is built into the skill. Revert to normal mode only when the user says "stop caveman" / "normal mode" or the semantic equivalent.
 6. **PO REGISTER for artifacts**: backlog reports and sprint goal verdicts lead with value and scope (what ships, what is at risk of slipping, what the trade-off is), never with tool actions.
 
 ## Commands
@@ -27,13 +27,13 @@ Snapshot path: `../jira-traceability-manager/data/trace.json` (override with `--
 
 | Skill | Purpose |
 |---|---|
-| `.claude/skills/po-status-report/` | Stakeholder-ready backlog/delivery report from the snapshot (read-only) |
-| `.claude/skills/po-sprint-health/` | Sprint goal verdict (verde/ámbar/rojo) with blocked + load analysis (read-only) |
-| `.claude/skills/po-alerts-to-jira/` | Alerts → Jira actions via `/acli`, confirmed plan before any write |
-| `.claude/skills/acli/` | Atlassian CLI for Jira Cloud issues, comments, transitions |
-| `.claude/skills/xray-cli/` | Xray Cloud test management via `bun xray` |
-| `.claude/skills/git-flow-master/` | End-to-end git operator (branch, commit, PR, conflicts) |
-| `.claude/skills/caveman/` | Terse conversational voice (vendored, Apache-2.0) |
+| `.opencode/skills/po-status-report/` | Stakeholder-ready backlog/delivery report from the snapshot (read-only) |
+| `.opencode/skills/po-sprint-health/` | Sprint goal verdict (verde/ámbar/rojo) with blocked + load analysis (read-only) |
+| `.opencode/skills/po-alerts-to-jira/` | Alerts → Jira actions via `/acli`, confirmed plan before any write |
+| `.opencode/skills/acli/` | Atlassian CLI for Jira Cloud issues, comments, transitions |
+| `.opencode/skills/xray-cli/` | Xray Cloud test management via `bun xray` |
+| `.opencode/skills/git-flow-master/` | End-to-end git operator (branch, commit, PR, conflicts) |
+| `.opencode/skills/caveman/` | Terse conversational voice (vendored, Apache-2.0) |
 
 ## MCPs
 
