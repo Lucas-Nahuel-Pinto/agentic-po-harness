@@ -1,2 +1,6 @@
 .env
 *.log
+
+# Local reports — never committed (folder kept alive by .gitkeep).
+reports/*
+!reports/.gitkeep
